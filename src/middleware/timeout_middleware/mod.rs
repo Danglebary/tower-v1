@@ -10,6 +10,7 @@ use pin_project::pin_project;
 use tokio::time::{sleep, Sleep};
 use tower::{BoxError, Service};
 
+/// Tower Middleware for adding timeout functionality to another ower service.
 pub struct TimeoutMiddleware<S> {
     inner: S,
     duration: Duration,
