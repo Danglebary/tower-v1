@@ -8,7 +8,7 @@ use std::{
 };
 use tower::Service;
 
-/// Tower Middleware for logging the initial Request and final Response of another Tower service.
+/// Tower Middleware for logging the execution time of another Tower service.
 pub struct TimingMiddleware<S> {
     inner: S,
 }
