@@ -1,15 +1,15 @@
 [package]
-name = "tower_v1"
+name = "tower_services"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tower = { version = "0.4.13"}
+tower = { version = "0.4.13", features = ["full"]}
 tokio = { version = "1.27.0", features = ["full"] }
 hyper = { version = "0.14.26", features = ["full"] }
+phf = { version = "0.11.1", features = ["macros"] }
 futures = "0.3.28"
-log = "0.4.17"
-env_logger = "0.10.0"
 pin-project = "1.0.12"
+tracing = "0.1.37"

@@ -7,6 +7,7 @@ use std::{
     time::Instant,
 };
 use tower::Service;
+use tracing::debug;
 
 /// Tower Middleware for logging the execution time of another Tower service.
 pub struct TimingMiddleware<S> {
@@ -60,7 +61,7 @@ where
             Poll::Ready(res) => res,
         };
         let duration = this.start.elapsed();
-        log::debug!("completed in {:?}", duration,);
+        debug!("completed in {:?}", duration);
         Poll::Ready(result)
     }
 }

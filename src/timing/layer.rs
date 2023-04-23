@@ -1,6 +1,6 @@
 use tower::Layer;
 
-use crate::middleware::timing_middleware::TimingMiddleware;
+use super::middleware::TimingMiddleware;
 
 pub struct TimingLayer;
 
@@ -15,5 +15,11 @@ impl<S> Layer<S> for TimingLayer {
 
     fn layer(&self, inner: S) -> Self::Service {
         TimingMiddleware::new(inner)
+    }
+}
+
+impl Default for TimingLayer {
+    fn default() -> Self {
+        Self::new()
     }
 }

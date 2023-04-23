@@ -6,25 +6,26 @@ use std::{
     task::{Context, Poll},
 };
 use tower::Service;
+use tracing::debug;
 
-/// Tower Middleware for logging the initial Request and final Response of another Tower service.
-pub struct LoggingMiddleware<S> {
+/// Tower Middleware for tracing the initial Request and final Response of another Tower service.
+pub struct TracingMiddleware<S> {
     inner: S,
 }
 
-impl<S> LoggingMiddleware<S> {
+impl<S> TracingMiddleware<S> {
     pub fn new(inner: S) -> Self {
         Self { inner }
     }
 }
 
-impl<S, B> Service<Request<B>> for LoggingMiddleware<S>
+impl<S, B> Service<Request<B>> for TracingMiddleware<S>
 where
     S: Service<Request<B>, Response = Response<B>>,
 {
     type Response = S::Response;
     type Error = S::Error;
-    type Future = LoggingMiddlewareFuture<S::Future>;
+    type Future = TracingMiddlewareFuture<S::Future>;
 
     fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         self.inner.poll_ready(cx)
@@ -33,9 +34,9 @@ where
     fn call(&mut self, req: Request<B>) -> Self::Future {
         let method = req.method().clone();
         let path = req.uri().path().to_string();
-        log::debug!("request {} {}", method, path);
+        debug!("request {} {}", method, path);
 
-        LoggingMiddlewareFuture {
+        TracingMiddlewareFuture {
             future: self.inner.call(req),
             method,
             path,
@@ -44,14 +45,14 @@ where
 }
 
 #[pin_project]
-pub struct LoggingMiddlewareFuture<F> {
+pub struct TracingMiddlewareFuture<F> {
     #[pin]
     future: F,
     method: Method,
     path: String,
 }
 
-impl<F, B, E> Future for LoggingMiddlewareFuture<F>
+impl<F, B, E> Future for TracingMiddlewareFuture<F>
 where
     F: Future<Output = Result<Response<B>, E>>,
 {
@@ -68,7 +69,7 @@ where
         } else {
             500
         };
-        log::debug!("response {} {} status={}", this.method, this.path, status,);
+        debug!("response {} {} status={}", this.method, this.path, status,);
         Poll::Ready(result)
     }
 }
